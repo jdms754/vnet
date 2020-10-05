@@ -37,7 +37,8 @@
         "vnetPeeringNestedTemplateUri": "[uri(variables('templatePath'), concat('vnet_peering.json'))]",
         "appServicePlanNestedTemplateUri": "[uri(variables('templatePath'), concat('app_svc_plan.json'))]",
         "appNestedTemplateUri": "[uri(variables('templatePath'), concat('app.json'))]",
-        "sqlNestedTemplateUri": "[uri(variables('templatePath'), concat('sqldb.json'))]"
+        "sqlNestedTemplateUri": "[uri(variables('templatePath'), concat('sqldb.json'))]",
+        "privateLinkNestedTemplateUri": "[uri(variables('templatePath'), concat('private_link.json'))]"
     },
     "resources": [
         {
@@ -189,6 +190,42 @@
                     },
                     "databaseName": {
                         "value": "[variables('sqlDatabaseName')]"
+                    }
+                }
+            }
+        },
+        {
+            "comments": "This deployment links to the private_link.json nested ARM template",
+            "name": "linkedTemplate-sqldb-private-link",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "linkedTemplate-sqldb"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('privateLinkNestedTemplateUri')]"
+                },
+                "parameters": {
+                    "suffix": {
+                        "value": "[variables('suffix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "resourceType": {
+                        "value": "Microsoft.Sql/servers"
+                    },
+                    "resourceName": {
+                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-sqldb')).outputs.sqlServerName.value]"
+                    },
+                    "groupType": {
+                        "value": "sqlServer"
+                    },
+                    "subnet": {
+                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-vnet-0')).outputs.subnetResourceIds.value[0].id]"
                     }
                 }
             }

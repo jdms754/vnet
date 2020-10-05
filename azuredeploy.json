@@ -261,6 +261,42 @@
                     }
                 }
             }
+        },
+        {
+            "comments": "This deployment links to the private_link.json nested ARM template",
+            "name": "linkedTemplate-storage-private-link",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "linkedTemplate-storage"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('privateLinkNestedTemplateUri')]"
+                },
+                "parameters": {
+                    "suffix": {
+                        "value": "[variables('suffix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "resourceType": {
+                        "value": "Microsoft.Storage/storageAccounts"
+                    },
+                    "resourceName": {
+                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-storage')).outputs.storageAccountName.value]"
+                    },
+                    "groupType": {
+                        "value": "blob"
+                    },
+                    "subnet": {
+                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-vnet-0')).outputs.subnetResourceIds.value[0].id]"
+                    }
+                }
+            }
         }
     ]
 }

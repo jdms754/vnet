@@ -19,7 +19,8 @@
     "variables": {
         "suffix": "[substring(replace(guid(resourceGroup().id), '-', ''), 0, 6)]",
         "templatePath": "https://raw.githubusercontent.com/jdms754/vnet/main/nested-templates/",
-        "vnetNestedTemplateUri": "[uri(variables('templatePath'), concat('vnets.json'))]"
+        "vnetNestedTemplateUri": "[uri(variables('templatePath'), concat('vnets.json'))]",
+        "vnetPeeringNestedTemplateUri": "[uri(variables('templatePath'), concat('vnet_peering.json'))]"
     },
     "resources": [
         {
@@ -46,6 +47,33 @@
                     },
                     "vNets": {
                         "value": "[parameters('vNets')[copyIndex()]]"
+                    }
+                }
+            }
+        },
+        {
+            "comments": "This deployment links to the vnet_peering.json nested ARM template",
+            "name": "linkedTemplate-peerings",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "vnetCopy"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('vnetPeeringNestedTemplateUri')]"
+                },
+                "parameters": {
+                    "suffix": {
+                        "value": "[variables('suffix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "vNets": {
+                        "value": "[parameters('vNets')]"
                     }
                 }
             }

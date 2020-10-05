@@ -11,13 +11,13 @@
         "location": {
             "type": "string",
             "metadata": {
-                "description": "location to dpeloy the vnet"
+                "description": "location to deploy the vnet"
             }
         },
         "vNets": {
             "type": "object",
             "metadata": {
-                "description": "JSON input object defining Vnets and subnets. The first network in the array is assumed to be the hub netwkr and will be peered to all subsequent networks"
+                "description": "JSON input object defining Vnets and subnets. The first network in the array is assumed to be the hub network and will be peered to all subsequent networks"
             }
         }
     },

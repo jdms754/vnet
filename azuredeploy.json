@@ -18,10 +18,12 @@
     },
     "variables": {
         "suffix": "[substring(replace(guid(resourceGroup().id), '-', ''), 0, 6)]",
+        "appName": "[concat('web-app-', uniqueString(subscription().id, resourceGroup().id), '-', variables('suffix'))]",
         "templatePath": "https://raw.githubusercontent.com/jdms754/vnet/main/nested-templates/",
         "vnetNestedTemplateUri": "[uri(variables('templatePath'), concat('vnets.json'))]",
         "vnetPeeringNestedTemplateUri": "[uri(variables('templatePath'), concat('vnet_peering.json'))]",
-        "appServicePlanNestedTemplateUri": "[uri(variables('templatePath'), concat('app_svc_plan.json'))]"
+        "appServicePlanNestedTemplateUri": "[uri(variables('templatePath'), concat('app_svc_plan.json'))]",
+        "appNestedTemplateUri": "[uri(variables('templatePath'), concat('app.json'))]"
     },
     "resources": [
         {
@@ -105,6 +107,41 @@
                             "Tier": "Standard",
                             "Name": "S1"
                         }
+                    }
+                }
+            }
+        },
+        {
+            "comments": "This deployment links to the app.json nested ARM template",
+            "name": "linkedTemplate-app",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "linkedTemplate-app-svc-plan"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('appNestedTemplateUri')]"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "hostingPlanName": {
+                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-app-svc-plan')).outputs.serverFarmName.value]"
+                    },
+                    "subnet": {
+                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-vnet-1')).outputs.subnetResourceIds.value[0].id]"
+                    },
+                    "appName": {
+                        "value": "[variables('appName')]"
+                    },
+                    "ipAddressRestriction": {
+                        "value": [
+                            "0.0.0.0/32"
+                        ]
                     }
                 }
             }

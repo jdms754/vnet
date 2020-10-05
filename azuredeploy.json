@@ -20,7 +20,8 @@
         "suffix": "[substring(replace(guid(resourceGroup().id), '-', ''), 0, 6)]",
         "templatePath": "https://raw.githubusercontent.com/jdms754/vnet/main/nested-templates/",
         "vnetNestedTemplateUri": "[uri(variables('templatePath'), concat('vnets.json'))]",
-        "vnetPeeringNestedTemplateUri": "[uri(variables('templatePath'), concat('vnet_peering.json'))]"
+        "vnetPeeringNestedTemplateUri": "[uri(variables('templatePath'), concat('vnet_peering.json'))]",
+        "appServicePlanNestedTemplateUri": "[uri(variables('templatePath'), concat('app_svc_plan.json'))]"
     },
     "resources": [
         {
@@ -74,6 +75,36 @@
                     },
                     "vNets": {
                         "value": "[parameters('vNets')]"
+                    }
+                }
+            }
+        },
+        {
+            "comments": "This deployment links to the app_svc_plan.json nested ARM template",
+            "name": "linkedTemplate-app-svc-plan",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "vnetCopy"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('appServicePlanNestedTemplateUri')]"
+                },
+                "parameters": {
+                    "suffix": {
+                        "value": "[variables('suffix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "serverFarmSku": {
+                        "value": {
+                            "Tier": "Standard",
+                            "Name": "S1"
+                        }
                     }
                 }
             }

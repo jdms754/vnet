@@ -44,7 +44,7 @@
             "name": "[concat(parameters('vNets').name, '-', parameters('suffix'))]",
             "type": "Microsoft.Network/virtualNetworks",
             "location": "[parameters('location')]",
-            "apiVersion": "2018-11-01",
+            "apiVersion": "2019-12-01",
             "properties": {
                 "addressSpace": {
                     "addressPrefixes": "[parameters('vNets').addressPrefixes]"

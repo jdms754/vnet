@@ -85,6 +85,12 @@
                             "name": "WEBSITE_DNS_SERVER",
                             "value": "168.63.129.16"
                         }
+                    ],
+                    "metadata": [
+                        {
+                            "name": "CURRENT_STACK",
+                            "value": "dotnetcore"
+                        }
                     ]
                 },
                 "scmType": "localGit"

@@ -14,16 +14,30 @@
             "metadata": {
                 "description": "JSON object describing virtual networks & subnets"
             }
+        },
+        "sqlAdministratorLoginName": {
+            "type": "string",
+            "metadata": {
+                "description": "Azure SQL DB administrator login name"
+            }
+        },
+        "sqlAdministratorLoginPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Azure SQL DB administrator password"
+            }
         }
     },
     "variables": {
         "suffix": "[substring(replace(guid(resourceGroup().id), '-', ''), 0, 6)]",
         "appName": "[concat('web-app-', uniqueString(subscription().id, resourceGroup().id), '-', variables('suffix'))]",
+        "sqlDatabaseName": "mydb01",
         "templatePath": "https://raw.githubusercontent.com/jdms754/vnet/main/nested-templates/",
         "vnetNestedTemplateUri": "[uri(variables('templatePath'), concat('vnets.json'))]",
         "vnetPeeringNestedTemplateUri": "[uri(variables('templatePath'), concat('vnet_peering.json'))]",
         "appServicePlanNestedTemplateUri": "[uri(variables('templatePath'), concat('app_svc_plan.json'))]",
-        "appNestedTemplateUri": "[uri(variables('templatePath'), concat('app.json'))]"
+        "appNestedTemplateUri": "[uri(variables('templatePath'), concat('app.json'))]",
+        "sqlNestedTemplateUri": "[uri(variables('templatePath'), concat('sqldb.json'))]"
     },
     "resources": [
         {
@@ -142,6 +156,39 @@
                         "value": [
                             "0.0.0.0/32"
                         ]
+                    }
+                }
+            }
+        },
+        {
+            "comments": "This deployment links to the sqldb.json nested ARM template",
+            "name": "linkedTemplate-sqldb",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "vnetCopy"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('sqlNestedTemplateUri')]"
+                },
+                "parameters": {
+                    "suffix": {
+                        "value": "[variables('suffix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "sqlAdministratorLogin": {
+                        "value": "[parameters('sqlAdministratorLoginName')]"
+                    },
+                    "sqlAdministratorLoginPassword": {
+                        "value": "[parameters('sqlAdministratorLoginPassword')]"
+                    },
+                    "databaseName": {
+                        "value": "[variables('sqlDatabaseName')]"
                     }
                 }
             }

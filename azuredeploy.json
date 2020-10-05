@@ -18,7 +18,7 @@
     },
     "variables": {
         "suffix": "[substring(replace(guid(resourceGroup().id), '-', ''), 0, 6)]",
-        "templatePath": "https://github.com/jdms754/vnet/blob/main/nested-templates/",
+        "templatePath": "https://raw.githubusercontent.com/jdms754/vnet/main/nested-templates/",
         "vnetNestedTemplateUri": "[uri(variables('templatePath'), concat('vnets.json'))]"
     },
     "resources": [

@@ -32,13 +32,15 @@
         "suffix": "[substring(replace(guid(resourceGroup().id), '-', ''), 0, 6)]",
         "appName": "[concat('web-app-', uniqueString(subscription().id, resourceGroup().id), '-', variables('suffix'))]",
         "sqlDatabaseName": "mydb01",
+        "storageContainerName": "mycontainer",
         "templatePath": "https://raw.githubusercontent.com/jdms754/vnet/main/nested-templates/",
         "vnetNestedTemplateUri": "[uri(variables('templatePath'), concat('vnets.json'))]",
         "vnetPeeringNestedTemplateUri": "[uri(variables('templatePath'), concat('vnet_peering.json'))]",
         "appServicePlanNestedTemplateUri": "[uri(variables('templatePath'), concat('app_svc_plan.json'))]",
         "appNestedTemplateUri": "[uri(variables('templatePath'), concat('app.json'))]",
         "sqlNestedTemplateUri": "[uri(variables('templatePath'), concat('sqldb.json'))]",
-        "privateLinkNestedTemplateUri": "[uri(variables('templatePath'), concat('private_link.json'))]"
+        "privateLinkNestedTemplateUri": "[uri(variables('templatePath'), concat('private_link.json'))]",
+        "storageNestedTemplateUri": "[uri(variables('templatePath'), concat('storage.json'))]"
     },
     "resources": [
         {
@@ -226,6 +228,36 @@
                     },
                     "subnet": {
                         "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-vnet-0')).outputs.subnetResourceIds.value[0].id]"
+                    }
+                }
+            }
+        },
+        {
+            "comments": "This deployment links to the storage.json nested ARM template",
+            "name": "linkedTemplate-storage",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "vnetCopy"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('storageNestedTemplateUri')]"
+                },
+                "parameters": {
+                    "suffix": {
+                        "value": "[variables('suffix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "containerName": {
+                        "value": "[variables('storageContainerName')]"
+                    },
+                    "defaultNetworkAccessAction": {
+                        "value": "Deny"
                     }
                 }
             }

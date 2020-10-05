@@ -81,7 +81,7 @@
             "resources": [
                 {
                     "name": "[concat('default/', parameters('containerName'))]",
-                    "type": "containers",
+                    "type": "blobServices/containers",
                     "apiVersion": "2019-06-01",
                     "dependsOn": [
                         "[variables('storageAccountName')]"

@@ -1,0 +1,41 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vNets": {
+      "value": [
+        {
+          "name": "hub",
+          "addressPrefixes": ["10.1.0.0/16"],
+          "subnets": [
+            {
+              "name": "PrivateLinkSubnet",
+              "addressPrefix": "10.1.1.0/24",
+              "privateLinkServiceNetworkPolicies": "Enabled"
+            }
+          ]
+        },
+        {
+          "name": "spoke",
+          "addressPrefixes": ["10.2.0.0/16"],
+          "subnets": [
+            {
+              "name": "AppSvcSubnet",
+              "addressPrefix": "10.2.1.0/24",
+              "privateEndpointNetworkPolicies": "Enabled",
+              "privateLinkServiceNetworkPolicies": "Enabled",
+              "delegations": [
+                {
+                  "name": "appservice",
+                  "properties": {
+                    "serviceName": "Microsoft.Web/serverFarms"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

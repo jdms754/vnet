@@ -1,0 +1,54 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "deployment location"
+            }
+        },
+        "vNets": {
+            "type": "array",
+            "metadata": {
+                "description": "JSON object describing virtual networks & subnets"
+            }
+        }
+    },
+    "variables": {
+        "suffix": "[substring(replace(guid(resourceGroup().id), '-', ''), 0, 6)]",
+        "templatePath": "https://github.com/jdms754/vnet/blob/main/nested-templates/",
+        "vnetNestedTemplateUri": "[uri(variables('templatePath'), concat('vnets.json'))]"
+    },
+    "resources": [
+        {
+            "comments": "This deployment links to the vnets.json nested ARM template",
+            "name": "[concat('linkedTemplate-vnet', '-', copyIndex())]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "copy": {
+                "name": "vnetCopy",
+                "count": "[length(parameters('vNets'))]"
+            },
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('vnetNestedTemplateUri')]"
+                },
+                "parameters": {
+                    "suffix": {
+                        "value": "[variables('suffix')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "vNets": {
+                        "value": "[parameters('vNets')[copyIndex()]]"
+                    }
+                }
+            }
+        }
+    ]
+}

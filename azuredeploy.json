@@ -205,42 +205,6 @@
             }
         },
         {
-            "comments": "This deployment links to the private_link.json nested ARM template",
-            "name": "linkedTemplate-sqldb-private-link",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "dependsOn": [
-                "linkedTemplate-sqldb"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "contentVersion": "1.0.0.0",
-                    "uri": "[variables('privateLinkNestedTemplateUri')]"
-                },
-                "parameters": {
-                    "suffix": {
-                        "value": "[variables('suffix')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    },
-                    "resourceType": {
-                        "value": "Microsoft.Sql/servers"
-                    },
-                    "resourceName": {
-                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-sqldb')).outputs.sqlServerName.value]"
-                    },
-                    "groupType": {
-                        "value": "sqlServer"
-                    },
-                    "subnet": {
-                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-vnet-0')).outputs.subnetResourceIds.value[0].id]"
-                    }
-                }
-            }
-        },
-        {
             "comments": "This deployment links to the storage.json nested ARM template",
             "name": "linkedTemplate-storage",
             "type": "Microsoft.Resources/deployments",
@@ -292,25 +256,37 @@
         },
         // sql
         {
-            "comments": "This deployment links to the private_dns.json nested ARM template",
-            "name": "linkedTemplate-sqldb-private-dns-hub-link",
+            "comments": "This deployment links to the private_link.json nested ARM template",
+            "name": "linkedTemplate-sqldb-private-link",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "linkedTemplate-sqldb-private-link"
+                "linkedTemplate-sqldb"
             ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
                     "contentVersion": "1.0.0.0",
-                    "uri": "[variables('privateDnsNestedTemplateUri')]"
+                    "uri": "[variables('privateLinkNestedTemplateUri')]"
                 },
                 "parameters": {
-                    "privateDnsZoneName": {
-                        "value": "[variables('sqlPrivateDnsZoneName')]"
+                    "suffix": {
+                        "value": "[variables('suffix')]"
                     },
-                    "virtualNetworkName": {
-                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-vnet-0')).outputs.virtualNetworkName.value]"
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "resourceType": {
+                        "value": "Microsoft.Sql/servers"
+                    },
+                    "resourceName": {
+                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-sqldb')).outputs.sqlServerName.value]"
+                    },
+                    "groupType": {
+                        "value": "sqlServer"
+                    },
+                    "subnet": {
+                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-vnet-0')).outputs.subnetResourceIds.value[0].id]"
                     }
                 }
             }
@@ -321,8 +297,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "linkedTemplate-sqldb-private-link",
-                "linkedTemplate-sqldb-private-dns-hub-link"
+                "linkedTemplate-sqldb-private-link"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -412,8 +387,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "linkedTemplate-storage-private-link",
-                "linkedTemplate-storage-private-dns-hub-link"
+                "linkedTemplate-storage-private-link"
             ],
             "properties": {
                 "mode": "Incremental",

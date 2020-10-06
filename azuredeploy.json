@@ -293,11 +293,36 @@
         },
         {
             "comments": "This deployment links to the private_dns.json nested ARM template",
-            "name": "linkedTemplate-sqldb-private-dns-hub-link",
+            "name": "linkedTemplate-sqldb-private-dns-spoke-link",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
                 "linkedTemplate-sqldb-private-link"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('privateDnsNestedTemplateUri')]"
+                },
+                "parameters": {
+                    "privateDnsZoneName": {
+                        "value": "[variables('sqlPrivateDnsZoneName')]"
+                    },
+                    "virtualNetworkName": {
+                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-vnet-1')).outputs.virtualNetworkName.value]"
+                    }
+                }
+            }
+        },
+        {
+            "comments": "This deployment links to the private_dns.json nested ARM template",
+            "name": "linkedTemplate-sqldb-private-dns-hub-link",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "linkedTemplate-sqldb-private-link",
+                "linkedTemplate-sqldb-private-dns-spoke-link"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -383,11 +408,36 @@
         },
         {
             "comments": "This deployment links to the private_dns.json nested ARM template",
-            "name": "linkedTemplate-storage-private-dns-hub-link",
+            "name": "linkedTemplate-storage-private-dns-spoke-link",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
                 "linkedTemplate-storage-private-link"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('privateDnsNestedTemplateUri')]"
+                },
+                "parameters": {
+                    "privateDnsZoneName": {
+                        "value": "[variables('storagePrivateDnsZoneName')]"
+                    },
+                    "virtualNetworkName": {
+                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-vnet-1')).outputs.virtualNetworkName.value]"
+                    }
+                }
+            }
+        },
+        {
+            "comments": "This deployment links to the private_dns.json nested ARM template",
+            "name": "linkedTemplate-storage-private-dns-hub-link",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "linkedTemplate-storage-private-link",
+                "linkedTemplate-storage-private-dns-spoke-link"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -472,13 +522,38 @@
                 }
             }
         },
+{
+            "comments": "This deployment links to the private_dns.json nested ARM template",
+            "name": "linkedTemplate-redis-private-dns-spoke-link",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "dependsOn": [
+                "linkedTemplate-redis-private-link"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "contentVersion": "1.0.0.0",
+                    "uri": "[variables('privateDnsNestedTemplateUri')]"
+                },
+                "parameters": {
+                    "privateDnsZoneName": {
+                        "value": "[variables('redisPrivateDnsZoneName')]"
+                    },
+                    "virtualNetworkName": {
+                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-vnet-1')).outputs.virtualNetworkName.value]"
+                    }
+                }
+            }
+        },
         {
             "comments": "This deployment links to the private_dns.json nested ARM template",
             "name": "linkedTemplate-redis-private-dns-hub-link",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
-                "linkedTemplate-redis-private-link"
+                "linkedTemplate-redis-private-link",
+                "linkedTemplate-redis-private-dns-spoke-link"
             ],
             "properties": {
                 "mode": "Incremental",

@@ -158,7 +158,7 @@
                         "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-app-svc-plan')).outputs.serverFarmName.value]"
                     },
                     "subnet": {
-                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-vnet-1')).outputs.subnetResourceIds.value[0].id]"
+                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-vnet-0')).outputs.subnetResourceIds.value[0].id]"
                     },
                     "appName": {
                         "value": "[variables('appName')]"
@@ -293,7 +293,7 @@
         // sql
         {
             "comments": "This deployment links to the private_dns.json nested ARM template",
-            "name": "linkedTemplate-sqldb-private-dns-spoke-link",
+            "name": "linkedTemplate-sqldb-private-dns-hub-link",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "dependsOn": [
@@ -310,7 +310,7 @@
                         "value": "[variables('sqlPrivateDnsZoneName')]"
                     },
                     "virtualNetworkName": {
-                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-vnet-1')).outputs.virtualNetworkName.value]"
+                        "value": "[reference(resourceId('Microsoft.Resources/deployments', 'linkedTemplate-vnet-0')).outputs.virtualNetworkName.value]"
                     }
                 }
             }
@@ -322,7 +322,7 @@
             "apiVersion": "2019-10-01",
             "dependsOn": [
                 "linkedTemplate-sqldb-private-link",
-                "linkedTemplate-sqldb-private-dns-spoke-link"
+                "linkedTemplate-sqldb-private-dns-hub-link"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -413,7 +413,7 @@
             "apiVersion": "2019-10-01",
             "dependsOn": [
                 "linkedTemplate-storage-private-link",
-                "linkedTemplate-storage-private-dns-spoke-link"
+                "linkedTemplate-storage-private-dns-hub-link"
             ],
             "properties": {
                 "mode": "Incremental",
